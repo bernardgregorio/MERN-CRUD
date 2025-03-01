@@ -1,4 +1,4 @@
-# MERN Authentication with JWT & Google OAuth 2.0 Enhanced with TanStack Table
+# MERN CRUD with Authentication, TanStack Table, and Material UI
 
 ## Tech Stack
 
