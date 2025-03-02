@@ -1,33 +1,37 @@
-import { useRef, useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setCredentials } from "../../features/auth/authSlice";
-import { useLoginMutation } from "../../features/auth/authApiSlice";
+import Stack from "@mui/material/Stack";
+import Box from "@mui/material/Box";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
+import Paper from "@mui/material/Paper";
+import InputAdornment from "@mui/material/InputAdornment";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import LockIcon from "@mui/icons-material/Lock";
+
+import { setCredentials } from "./authSlice";
+import { useLoginMutation } from "./authApiSlice";
 import useLocalStorage from "../../hooks/useLocalStorage";
 
 const Login = () => {
-  const userRef = useRef();
-  const errRef = useRef();
-
-  const [username, setUsername] = useLocalStorage("username", "");
-  const [password, setPassword] = useState("");
-  const [errMsg, setErrMsg] = useState("");
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [login, { isLoading }] = useLoginMutation();
 
   const [auth] = useLocalStorage("auth", "");
+  const [username, setUsername] = useLocalStorage("username", "");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (auth) navigate("/");
-    userRef.current.focus();
   }, []);
 
   useEffect(() => {
-    setErrMsg("");
+    setError(false);
   }, [username, password]);
 
   const handleSubmit = async (e) => {
@@ -36,72 +40,96 @@ const Login = () => {
     try {
       const data = await login({ username, password }).unwrap();
       dispatch(setCredentials({ ...data, username }));
-
       setPassword("");
       navigate("/");
-    } catch (err) {
-      setErrMsg(err.data.detail);
+    } catch (error) {
+      let msg = error?.data?.message[0].msg
+        ? error?.data?.message[0].msg
+        : error?.data?.message
+        ? error?.data?.message
+        : "Unable to update. Please try again.";
+      setError(msg);
     }
   };
 
-  const content = isLoading ? (
-    "Loading..."
-  ) : (
-    <main className="w-full min-h-screen flex flex-col justify-center items-center font-roboto">
-      <img src="/images/iskript.png" alt="" className="mb-8" />
-      <section className="w-90 min-h-96 border border-gray-200 p-3 bg-gray-100 rounded-md shadow-lg">
-        <p
-          ref={errRef}
-          className={`bg-red-600 text-white text-sm p-2 my-2 rounded-md ${
-            errMsg ? "block" : "hidden"
-          }`}
-          aria-live="assertive"
+  return (
+    <Box
+      component="main"
+      className="w-full min-h-screen flex flex-col items-center justify-center font-roboto bg-[#fafbfc]"
+    >
+      <Paper elevation={3}>
+        <Box
+          component="section"
+          className="w-100 min-h-96 px-6 pt-2 pb-12  bg-white"
         >
-          <WarningAmberIcon className="text-white mr-2" fontSize="small" />
-          {errMsg}
-        </p>
-        <h1 className="text-2xl mb-4 font-bold">Sign In</h1>
-        <form className="flex flex-col space-y-2" onSubmit={handleSubmit}>
-          <label htmlFor="username">Username</label>
-          <input
-            ref={userRef}
-            type="text"
-            id="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full border border-gray-300 p-2 rounded-md bg-white"
-            autoComplete="off"
-            required
-          />
+          <Box display="flex" justifyContent="center">
+            <img src="/images/iskript.png" alt="" className="m-2" />
+          </Box>
 
-          <label htmlFor="password" className="mt-3">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 p-2 rounded-md bg-white"
-            required
-          />
+          <h1 className="text-2xl font-medium text-center mb-6">Login</h1>
+          {error && (
+            <Alert severity="error" className="my-4">
+              {error}
+            </Alert>
+          )}
 
-          <button className="bg-blue-500 text-white p-2 rounded-md my-2 cursor-pointer">
-            Sign In
-          </button>
+          <form onSubmit={handleSubmit}>
+            <Stack spacing={3}>
+              <TextField
+                fullWidth
+                label="Username"
+                autoFocus
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                autoComplete="off"
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <AccountCircle />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
 
-          <p className="mt-6">
-            <span className="mr-2">Don&apos;t have an account?</span>
-            <Link to="/register" className="text-blue-500">
-              Sign Up
-            </Link>
-          </p>
-        </form>
-      </section>
-    </main>
+              <TextField
+                fullWidth
+                label="Password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LockIcon />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+
+              <Button
+                type="submit"
+                variant="contained"
+                {...(isLoading && { disabled: true })}
+              >
+                Login
+              </Button>
+
+              <p>
+                <span className="mr-2">Don&apos;t have an account?</span>
+                <Link to="/register" className="text-blue-500">
+                  Create an account.
+                </Link>
+              </p>
+            </Stack>
+          </form>
+        </Box>
+      </Paper>
+    </Box>
   );
-
-  return content;
 };
 
 export default Login;
