@@ -9,6 +9,9 @@ import TableRow from "@mui/material/TableRow";
 import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
 import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+import SearchIcon from "@mui/icons-material/Search";
+import InputAdornment from "@mui/material/InputAdornment";
 
 import {
   useReactTable,
@@ -72,21 +75,34 @@ const Tanstack = ({ data, columns, customBtn = "" }) => {
   });
 
   return (
-    <section className="container mx-auto w-5xl p-2 font-roboto mt-10">
+    <Box
+      component="section"
+      className="container mx-auto w-5xl p-2 font-roboto mt-10"
+    >
       {/**global filter */}
-      <section className="flex flex-row gap-2 justify-end mb-2">
+      <Box component="section" className="flex flex-row gap-2  mb-2">
+        <Box className="flex-1">
+          <TextField
+            id="search"
+            // label="Search"
+            variant="outlined"
+            value={globalFilter}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            size="small"
+            className=" bg-white w-100"
+            slotProps={{
+              input: {
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+              },
+            }}
+          />
+        </Box>
         {customBtn}
-
-        <TextField
-          id="search"
-          label="Search"
-          variant="outlined"
-          value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          size="small"
-          className="bg-white"
-        />
-      </section>
+      </Box>
 
       <TableContainer className="border-l border-t border-[#e0e0e0] overflow-x-auto rounded-md shadow-md">
         <Table
@@ -154,13 +170,9 @@ const Tanstack = ({ data, columns, customBtn = "" }) => {
         </Table>
         <TablePagination
           rowsPerPageOptions={[
-            10,
-            20,
-            30,
-            40,
-            50,
+            10, 20, 30, 40, 50,
             // eslint-disable-next-line react/prop-types
-            { label: "All", value: data.length },
+            // { label: "All", value: data.length },
           ]}
           component="div"
           count={table.getFilteredRowModel().rows.length}
@@ -182,7 +194,7 @@ const Tanstack = ({ data, columns, customBtn = "" }) => {
           ActionsComponent={TablePaginationActions}
         />
       </TableContainer>
-    </section>
+    </Box>
   );
 };
 

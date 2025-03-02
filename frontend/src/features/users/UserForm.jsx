@@ -42,14 +42,6 @@ const UserForm = ({
     formState: { errors },
   } = useForm({
     resolver: yupResolver(type == "update" ? updateUser : createUser),
-    defaultValues: {
-      username: user?.username || "",
-      email: user?.email || "",
-      expirationDate: user?.expirationDate
-        ? dayjs(user.expirationDate).format("YYYY-MM-DD")
-        : dayjs().format("YYYY-MM-DD"),
-      status: statusState,
-    },
   });
 
   useEffect(() => {
@@ -59,9 +51,10 @@ const UserForm = ({
       expirationDate: user?.expirationDate
         ? dayjs(user.expirationDate).format("YYYY-MM-DD")
         : dayjs().format("YYYY-MM-DD"),
-      status: statusState,
+      status: user?.status?._id || "",
     });
-  }, [user, reset, statusState]);
+    setStatusState(user?.status?._id || "67beaaffebab9c1b684fd3d4");
+  }, [user, reset]);
 
   const onSubmit = (data) => {
     dialog.openDialog(
