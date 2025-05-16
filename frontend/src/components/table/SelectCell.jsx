@@ -14,7 +14,8 @@ const SelectCell = ({ settings, options = [], patchUser, dialog }) => {
     setAnchorEl(null);
   };
 
-  const name = settings.getValue() || {};
+  const name = settings.getValue().name || {};
+
   const handleUpdate = async (status) => {
     try {
       await patchUser({

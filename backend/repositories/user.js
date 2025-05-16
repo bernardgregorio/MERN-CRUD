@@ -18,7 +18,11 @@ class UserRepository {
   }
 
   async getAllUsers() {
-    return await User.find().populate("status").exec();
+    try {
+      return await User.find().populate("status").exec();
+    } catch (error) {
+      throw createError("Failed to fetch all users", 500);
+    }
   }
 
   async updateUser(id, data) {

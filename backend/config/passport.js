@@ -1,42 +1,12 @@
 import passport from "passport";
-import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { Strategy as JWTStrategy, ExtractJwt } from "passport-jwt";
 import dotenv from "dotenv";
 import UserService from "../services/user.js";
 dotenv.config();
 
-// Google OAuth Strategy
-passport.use(
-  "google",
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL,
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      try {
-        const data = {
-          username: profile.name.givenName,
-          password: null,
-          email: profile.emails[0].value,
-          googleId: profile.id,
-        };
-
-        const user = await UserService.findOrCreate({ ...data, refreshToken });
-
-        return done(null, user);
-      } catch (error) {
-        return done(error, null);
-      }
-    }
-  )
-);
-
 // JWT Access Token Strategy
 const accessTokenOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-
   secretOrKey: process.env.ACCESS_TOKEN_SECRET,
 };
 

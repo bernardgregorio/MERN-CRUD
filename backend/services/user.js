@@ -45,17 +45,21 @@ class UserService {
   }
 
   async getAllUsers() {
-    const users = await UserRepository.getAllUsers();
+    try {
+      const users = await UserRepository.getAllUsers();
 
-    if (!users) throw createError("User not found", 404);
-
-    return users.map((user) => ({
-      id: user._id,
-      username: user.username,
-      email: user.email,
-      status: user.status.name,
-      expirationDate: user.expirationDate.toISOString().split("T")[0],
-    }));
+      if (!users) throw createError("User not found", 404);
+      console.log(users[0].status.name);
+      return users.map((user) => ({
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        status: user.status,
+        expirationDate: user.expirationDate.toISOString().split("T")[0],
+      }));
+    } catch (error) {
+      throw createError("Failed to fetch all users", 500);
+    }
   }
 
   async updateUser(id, data) {
