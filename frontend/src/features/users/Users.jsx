@@ -1,16 +1,16 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
-import IconButton from "@mui/material/IconButton";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
+import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
 import Tanstack from "../../components/table/Tanstack";
 import InputCell from "../../components/table/InputCell";
 import SelectCell from "../../components/table/SelectCell";
 import DateCell from "../../components/table/DateCell";
+import EditBtn from "../../components/action/EditBtn";
+import DeleteBtn from "../../components/action/DeleteBtn";
 
 import CustomDialog from "../../components/dialog/CustomDialog";
 import {
@@ -178,27 +178,23 @@ const Users = () => {
       header: "Actions",
       footer: "Actions",
       cell: (props) => (
-        <div className="text-center">
-          <Tooltip title="Edit">
-            <IconButton
-              variant="contained"
-              aria-label="update"
-              color="primary"
-              size="large"
+        <Box>
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <EditBtn
               onClick={(e) => {
                 e.preventDefault();
                 setUserFormType("update");
                 handleFetchUser(props.row.original.id);
               }}
-            >
-              <EditIcon fontSize="inherit" />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton
-              aria-label="delete"
-              color="error"
-              size="large"
+            />
+            <DeleteBtn
               onClick={(e) => {
                 e.preventDefault();
                 setDialogWidth("xs");
@@ -208,11 +204,9 @@ const Users = () => {
                   () => handleDelete(props.row.original.id)
                 );
               }}
-            >
-              <DeleteIcon fontSize="inherit" />
-            </IconButton>
-          </Tooltip>
-        </div>
+            />
+          </Stack>
+        </Box>
       ),
       enableSorting: false,
     },
